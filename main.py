@@ -30,4 +30,4 @@ def getImages(path):
                 print(Fore.RED,'duplicada:\t', filename, hashSum, '\tdeletada',Style.RESET_ALL)
 
 
-getImages(os.getcwd()+'/imagens')
+getImages(os.getcwd()+'/files')

@@ -51,9 +51,10 @@ func listDir(dir string) {
 	files, err := ioutil.ReadDir(dir)
 	checkError(err)
 
-	var filesHash [len(files)]string
+	var filesMap map[string]string
+	filesMap = make(map[string]string)
 
-	for indice, file := range files {
+	for _, file := range files {
 		diretory := verifyDirPath(dir) + file.Name()
 
 		if file.IsDir() {
@@ -66,10 +67,20 @@ func listDir(dir string) {
 		} else {
 			var hashValue = md5sum(diretory)
 			if verbose {
-				fmt.Println("File:", "\t", file.Name(), "\t")
+				fmt.Print("File:", "\t", file.Name(), "\t")
 			}
-			filesHash[indice] = hashValue
-			fmt.Println(len(filesHash))
+			_, duplicado := filesMap[hashValue]
+
+			if duplicado {
+				fmt.Print("DUPLICADO\t")
+				if delete {
+					os.Remove(diretory)
+					fmt.Println("DELETADO!!!")
+				}
+			} else {
+				filesMap[hashValue] = diretory
+			}
+			fmt.Println("")
 		}
 	}
 }
@@ -77,7 +88,7 @@ func listDir(dir string) {
 func init() {
 	flag.StringVar(&path, "p", "./", "Path do diretório a ser verificado.")
 	flag.BoolVar(&recursive, "r", false, "Recursive")
-	flag.BoolVar(&delete, "d", true, "Delete")
+	flag.BoolVar(&delete, "d", false, "Delete")
 	flag.BoolVar(&verbose, "v", false, "Verbose")
 	flag.Parse()
 }
