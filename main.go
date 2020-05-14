@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/list"
 	"crypto/md5"
 	"encoding/hex"
 	"flag"
@@ -16,13 +15,7 @@ import (
 var path string
 var recursive bool
 var verbose bool
-
-type object struct {
-	name    string
-	path    string
-	hashSum string
-	count   int
-}
+var delete bool
 
 func checkError(err error) {
 	if err != nil {
@@ -54,13 +47,13 @@ func md5sum(filePath string) (result string) {
 	return
 }
 
-func listDir(dir string) (values *list.List) {
+func listDir(dir string) {
 	files, err := ioutil.ReadDir(dir)
 	checkError(err)
 
-	values = list.New()
+	var filesHash [len(files)]string
 
-	for _, file := range files {
+	for indice, file := range files {
 		diretory := verifyDirPath(dir) + file.Name()
 
 		if file.IsDir() {
@@ -71,30 +64,25 @@ func listDir(dir string) (values *list.List) {
 				listDir(diretory)
 			}
 		} else {
+			var hashValue = md5sum(diretory)
 			if verbose {
-				fmt.Println("File:", "\t", file.Name(), "\t", md5sum(diretory))
+				fmt.Println("File:", "\t", file.Name(), "\t")
 			}
-			obj := object{name: file.Name(), path: diretory, hashSum: md5sum(diretory), count: 1}
-			values.PushBack(obj)
+			filesHash[indice] = hashValue
+			fmt.Println(len(filesHash))
 		}
 	}
-
-	return values
 }
 
 func init() {
 	flag.StringVar(&path, "p", "./", "Path do diretório a ser verificado.")
 	flag.BoolVar(&recursive, "r", false, "Recursive")
+	flag.BoolVar(&delete, "d", true, "Delete")
 	flag.BoolVar(&verbose, "v", false, "Verbose")
 	flag.Parse()
 }
 
 func main() {
 	fmt.Println(recursive, path)
-	_ = listDir(path)
-
-	// Loop over container list.
-	// for temp := files.Front(); temp != nil; temp = temp.Next() {
-	// 	fmt.Println(temp.Value)
-	// }
+	listDir(path)
 }
