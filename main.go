@@ -16,6 +16,9 @@ var path string
 var recursive bool
 var verbose bool
 var delete bool
+var count bool
+
+var totalDuplicatos = 0
 
 func checkError(err error) {
 	if err != nil {
@@ -59,7 +62,7 @@ func listDir(dir string) {
 
 		if file.IsDir() {
 			if verbose {
-				fmt.Println("Diretory:", "\t", diretory)
+				fmt.Print("\nDiretory:", "\t", diretory)
 			}
 			if recursive {
 				listDir(diretory)
@@ -67,20 +70,25 @@ func listDir(dir string) {
 		} else {
 			var hashValue = md5sum(diretory)
 			if verbose {
-				fmt.Print("File:", "\t", file.Name(), "\t")
+				fmt.Print("\nFile:", "\t", file.Name(), "\t")
 			}
 			_, duplicado := filesMap[hashValue]
 
 			if duplicado {
-				fmt.Print("DUPLICADO\t")
+				if verbose {
+					fmt.Print("DUPLICADO\t")
+				}
+				if count {
+					totalDuplicatos++
+				}
+
 				if delete {
 					os.Remove(diretory)
-					fmt.Println("DELETADO!!!")
+					fmt.Print("DELETADO!!!")
 				}
 			} else {
 				filesMap[hashValue] = diretory
 			}
-			fmt.Println("")
 		}
 	}
 }
@@ -89,11 +97,12 @@ func init() {
 	flag.StringVar(&path, "p", "./", "Path do diretório a ser verificado.")
 	flag.BoolVar(&recursive, "r", false, "Recursive")
 	flag.BoolVar(&delete, "d", false, "Delete")
+	flag.BoolVar(&count, "c", false, "Contar duplicados")
 	flag.BoolVar(&verbose, "v", false, "Verbose")
 	flag.Parse()
 }
 
 func main() {
-	fmt.Println(recursive, path)
 	listDir(path)
+	fmt.Print("\n", "Total de arquivos duplicados:\t", totalDuplicatos, "\n\n")
 }
