@@ -94,11 +94,11 @@ func listDir(dir string) {
 }
 
 func init() {
-	flag.StringVar(&path, "p", "./", "Path do diretório a ser verificado.")
-	flag.BoolVar(&recursive, "r", false, "Recursive")
-	flag.BoolVar(&delete, "d", false, "Delete")
-	flag.BoolVar(&count, "c", false, "Contar duplicados")
-	flag.BoolVar(&verbose, "v", false, "Verbose")
+	flag.StringVar(&path, "p", "./", "Caminho do diretório a ser verificado para buscar arquivos duplicados")
+	flag.BoolVar(&recursive, "r", false, "Buscar recursivamente em todos os subdiretórios")
+	flag.BoolVar(&delete, "d", false, "CUIDADO: Deletar automaticamente os arquivos duplicados encontrados")
+	flag.BoolVar(&count, "c", false, "Contar e exibir o total de arquivos duplicados encontrados")
+	flag.BoolVar(&verbose, "v", false, "Exibir informações detalhadas durante a execução (modo verboso)")
 	flag.Parse()
 }
 
